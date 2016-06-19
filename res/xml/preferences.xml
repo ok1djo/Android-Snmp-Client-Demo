@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/up4dar"
+        android:key="up4dar">
+        <EditTextPreference
+            android:key="ip"
+            android:title="@string/up4dar_ip"
+            android:summary="@string/up4dar_ip_summ"
+            android:defaultValue="192.168.30.24" />
+        <EditTextPreference
+            android:key="port"
+            android:title="@string/up4dar_port"
+            android:summary="@string/up4dar_port_summ"
+            android:defaultValue="161" />
+        <EditTextPreference
+            android:key="comm"
+            android:title="@string/up4dar_comm"
+            android:summary="@string/up4dar_comm_summ"
+            android:defaultValue="t79PcTbu17k8" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

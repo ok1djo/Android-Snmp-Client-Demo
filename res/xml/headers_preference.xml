@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+        android:fragment="cz.ok1djo.remote4up4dar.MyPreferenceFragment"
+        android:title="@string/manual"
+        android:summary="@string/manual_summ" />
+    <header
+        android:fragment="cz.ok1djo.remote4up4dar.MyPreferenceFragment"
+        android:title="@string/auto"
+        android:summary="@string/auto_summ" />
+</preference-headers>

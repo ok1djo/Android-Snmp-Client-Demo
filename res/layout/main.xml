@@ -7,39 +7,92 @@
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/sendBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="send request" />
-        
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="gone" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        
-    </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView"
+                android:layout_column="0"
+                android:layout_span="25"
+                android:background="@android:color/darker_gray"
+                android:visibility="visible"
+                android:minHeight="64dp"
+                android:minWidth="128dp"
+                android:maxHeight="64dp"
+                android:maxWidth="128dp"
+                android:contentDescription="@string/display" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="96dp"
+                android:text="@string/textview"
+                android:id="@+id/textView"
+                android:layout_gravity="bottom"
+                android:layout_weight="1.16"
+                android:layout_column="25" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_light"
+                android:id="@+id/toggleButtonLight"
+                android:layout_gravity="center_vertical"
+                android:layout_column="23"
+                android:checked="true"
+                android:textOff="@string/button_light"
+                android:textOn="@string/button_light" />
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New ToggleButton"
+                android:id="@+id/toggleButtonMute"
+                android:layout_gravity="center_vertical"
+                android:layout_column="24"
+                android:checked="false"
+                android:textOff="@string/button_mute"
+                android:textOn="@string/button_mute" />
+
+            <Button
+                android:id="@+id/sendBtn"
+                android:text="@string/button_refresh"
+                android:layout_gravity="center_vertical"
+                android:layout_column="25" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                android:layout_column="26" />
+        </TableRow>
+
+    </TableLayout>
 
     <EditText
         android:id="@+id/console"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="2"
         android:background="@android:color/black"
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"
         android:maxWidth="100dp"
-        android:text="waiting..."
+        android:text="@string/waiting"
         android:textColor="@android:color/white"
         android:textSize="10sp" >
 

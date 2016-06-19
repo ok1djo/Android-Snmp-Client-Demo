@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SnmpDemo</string>
+    <string name="app_name">Remote 4 UP4DAR</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
+    <string name="up4dar">UP4DAR specific settings</string>
+    <string name="up4dar_ip">IP</string>
+    <string name="up4dar_ip_summ">IP address</string>
+    <string name="up4dar_port">port</string>
+    <string name="up4dar_port_summ">Port</string>
+    <string name="up4dar_comm">community</string>
+    <string name="up4dar_comm_summ">Community string</string>
+    <string name="display">display</string>
+    <string name="textview">Callsign: ------\nSupply: --.---V</string>
+    <string name="button_light">BckLt</string>
+    <string name="button_mute">Mute</string>
+    <string name="button_refresh">refresh</string>
+    <string name="waiting">waiting...</string>
+    <string name="manual">Manual settings</string>
+    <string name="manual_summ">Set / tune values manually</string>
+    <string name="auto">Autodetect</string>
+    <string name="auto_summ">Tries to locate available devices automatically</string>
 </resources>
