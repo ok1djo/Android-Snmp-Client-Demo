@@ -19,6 +19,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -33,12 +36,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.ToggleButton;
-
+import java.io.IOException;
 import java.util.List;
 
 public class SNMPClient extends Activity implements View.OnClickListener {
+	DrawView drawView;
 	//
 	Context context;
 
@@ -50,6 +56,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	private static final String OIDCALL = "3";
 	private static final String OIDVOLTAGE = "4";
 	private static final String OIDBACKLIGHT = "9.2";
+	private static final String OIDMAINDISP = "1.8.1.1";
 	private String OIDVALUE = OIDBASE + OIDBACKLIGHT;
 	private static final int SNMP_VERSION = SnmpConstants.version1;
 
@@ -60,7 +67,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	public int type;
 	public Variable value;
 	static OID oid;
-	static VariableBinding req;
+	public  VariableBinding req;
 
 	// UI
 	private Button sendBtn;
@@ -69,6 +76,12 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	private EditText console;
 	private ProgressBar mSpinner;
 	private StringBuffer logResult = new StringBuffer();
+	private String CallSign;
+	private Integer Supply;
+	private Integer Volume;
+	private Integer BackLight;
+	private TextView textView;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,54 +89,39 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 		setContentView(R.layout.main);
 		context = this;
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
 		// Initialize UI
 		iniUI();
-		// set onClick listener
-		sendBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				AsyncTask<Void, Void, Void> mAsyncTask = new AsyncTask<Void, Void, Void>() {
-
-					protected void onPreExecute() {
-						mSpinner.setVisibility(View.VISIBLE);
-					}
-
-					@Override
-					protected Void doInBackground(Void... params) {
-						try {
-							sendSnmpRequest(OIDBASE + OIDCALL, PDU.GET, null);
-						} catch (Exception e) {
-							Log.d(TAG,
-									"Error sending snmp request - Error: " + e.getMessage());
-						}
-						return null;
-					}
-
-					protected void onPostExecute(Void result) {
-						console.setText("");
-						console.append(logResult);
-						mSpinner.setVisibility(View.GONE);
-					}
-
-				};
-
-
-				mAsyncTask.execute();
-			}
-		});
-		BackLt = (ToggleButton) findViewById(R.id.toggleButtonLight);
-		BackLt.setOnClickListener(this);
-		Mute = (ToggleButton) findViewById(R.id.toggleButtonMute);
-		Mute.setOnClickListener(this);
 	}
 
 	private void iniUI() {
 		sendBtn = (Button) findViewById(R.id.sendBtn);
+		sendBtn.setOnClickListener(this);
+		BackLt = (ToggleButton) findViewById(R.id.toggleButtonLight);
+		BackLt.setOnClickListener(this);
+		Mute = (ToggleButton) findViewById(R.id.toggleButtonMute);
+		Mute.setOnClickListener(this);
 		console = (EditText) findViewById(R.id.console);
 		mSpinner = (ProgressBar) findViewById(R.id.progressBar);
+		textView= (TextView) findViewById(R.id.textView);
+//		imageView = (ImageView) findViewById(R.id.imageView);
+//		drawView = (DrawView) findViewById(R.id.drawView);
+		SimpleDrawingView.fillBitmap();
+    }
+
+	class DrawView extends View {
+		Paint paint = new Paint();
+
+		public DrawView(Context context) {
+			super(context);
+			paint.setColor(Color.BLUE);
+		}
+		@Override
+		public void onDraw(Canvas canvas) {
+			super.onDraw(canvas);
+			canvas.drawLine(10, 20, 30, 40, paint);
+			canvas.drawLine(20, 10, 50, 20, paint);
+
+		}
 	}
 
 	@Override
@@ -148,11 +146,9 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	}
 
 	public void onClick(View v) {
-		type = PDU.GET;
+//		type = PDU.GET;
 		switch (v.getId()) {
 			case R.id.toggleButtonLight: {
-				OIDVALUE = OIDBASE + OIDVOLUME;
-				type = PDU.SET;
 				if (BackLt.isChecked()) {
 					value = new Integer32(5);
 					logResult.append("entered 5\n");
@@ -160,12 +156,11 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 					value = new Integer32(0);
 					logResult.append("entered 0\n");
 				}
+				doMagic(OIDBASE + OIDBACKLIGHT,PDU.SET,value);
 				break;
 			}
 
 			case R.id.toggleButtonMute: {
-				OIDVALUE = OIDBASE + OIDVOLUME;
-				type = PDU.SET;
 				if (Mute.isChecked()) {
 					value = new Integer32(-57);
 					logResult.append("entered -57\n");
@@ -173,16 +168,49 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 					value = new Integer32(-10);
 					logResult.append("entered -10\n");
 				}
-
+				doMagic(OIDBASE + OIDVOLUME,PDU.SET,value);
 				break;
 			}
 
+			case R.id.sendBtn: {
+				doMagic(OIDBASE + OIDCALL,PDU.GET,null);
+				CallSign=req.getVariable().toString();
+				doMagic(OIDBASE + OIDVOLTAGE,PDU.GET,null);
+				Supply=req.getVariable().toInt();
+				doMagic(OIDBASE + OIDVOLUME,PDU.GET,null);
+				Volume=req.getVariable().toInt();
+				doMagic(OIDBASE + OIDBACKLIGHT,PDU.GET,null);
+				BackLight=req.getVariable().toInt();
+				doMagic(OIDBASE + OIDMAINDISP,PDU.GET,null);
+				SimpleDrawingView.paintBitmap(req.getVariable().toString());
+				textView.setText("CallSign: "+CallSign+"\nSupply: "+Supply+" mV\nBacklight: "+BackLight+"\nVolume: "+Volume);
+				if (Volume==-57) {
+					Mute.setChecked(true);
+				} else {
+					Mute.setChecked(false);
+				}
+				if (BackLight==0) {
+					BackLt.setChecked(false);
+				} else {
+					BackLt.setChecked(true);
+				}
+				break;
+			}
 			//.... etc
 
 		}
-		doMagic();
+
 	}
-	public void doMagic() {
+	public void doMagic(String lOIDVALUE, int ltype, Variable lvalue) {
+
+			mSpinner.setVisibility(View.VISIBLE);
+			try{
+				logResult.append("sleeping \n");
+				Thread.sleep(100);
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+//		semafor=true;
 		AsyncTask<Void, Void, Void> mAsyncTask = new AsyncTask<Void, Void, Void>() {
 
 			protected void onPreExecute() {
@@ -192,7 +220,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
-					sendSnmpRequest(OIDVALUE, type, value);
+					sendSnmpRequest(lOIDVALUE, ltype, lvalue);
 				} catch (Exception e) {
 					Log.d(TAG,
 							"Error sending snmp request - Error: " + e.getMessage());
@@ -206,9 +234,13 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 				mSpinner.setVisibility(View.GONE);
 			}
 		};
-
-
 		mAsyncTask.execute();
+		try{
+			logResult.append("sleeping \n");
+			Thread.sleep(100);
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
 
 	}
 
@@ -277,6 +309,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 									+ responsePDU.getVariableBindings());
 					logResult.append("Snmp Get Response = "
 							+ responsePDU.getVariableBindings() + "\n");
+					req=responsePDU.getVariableBindings().get(0);
 				} else {
 					Log.d(TAG, "Error: Request Failed");
 					Log.d(TAG, "Error Status = " + errorStatus);
@@ -297,6 +330,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 			logResult.append("Error: Agent Timeout... \n");
 		}
 		snmp.close();
+//		semafor=false;
 	}
 }
 
