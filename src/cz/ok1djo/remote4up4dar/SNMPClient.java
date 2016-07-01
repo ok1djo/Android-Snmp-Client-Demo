@@ -81,6 +81,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	private Integer Volume;
 	private Integer BackLight;
 	private TextView textView;
+	private SimpleDrawingView simpleDrawingView1;
 
 
 	@Override
@@ -103,9 +104,12 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 		console = (EditText) findViewById(R.id.console);
 		mSpinner = (ProgressBar) findViewById(R.id.progressBar);
 		textView= (TextView) findViewById(R.id.textView);
+		textView.setOnClickListener(this);
 //		imageView = (ImageView) findViewById(R.id.imageView);
 //		drawView = (DrawView) findViewById(R.id.drawView);
 		SimpleDrawingView.fillBitmap();
+		simpleDrawingView1 = (SimpleDrawingView) findViewById(R.id.simpleDrawingView1);
+		simpleDrawingView1.setOnClickListener(this);
     }
 
 	class DrawView extends View {
@@ -183,6 +187,35 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 				BackLight=req.getVariable().toInt();
 				doMagic(OIDBASE + OIDMAINDISP,PDU.GET,null);
 				SimpleDrawingView.paintBitmap(req.getVariable().toString());
+				textView.setText("CallSign: "+CallSign+"\nSupply: "+Supply+" mV\nBacklight: "+BackLight+"\nVolume: "+Volume);
+				if (Volume==-57) {
+					Mute.setChecked(true);
+				} else {
+					Mute.setChecked(false);
+				}
+				if (BackLight==0) {
+					BackLt.setChecked(false);
+				} else {
+					BackLt.setChecked(true);
+				}
+				break;
+			}
+
+			case R.id.simpleDrawingView1: {
+				doMagic(OIDBASE + OIDMAINDISP,PDU.GET,null);
+				SimpleDrawingView.paintBitmap(req.getVariable().toString());
+				break;
+			}
+
+			case R.id.textView: {
+				doMagic(OIDBASE + OIDCALL,PDU.GET,null);
+				CallSign=req.getVariable().toString();
+				doMagic(OIDBASE + OIDVOLTAGE,PDU.GET,null);
+				Supply=req.getVariable().toInt();
+				doMagic(OIDBASE + OIDVOLUME,PDU.GET,null);
+				Volume=req.getVariable().toInt();
+				doMagic(OIDBASE + OIDBACKLIGHT,PDU.GET,null);
+				BackLight=req.getVariable().toInt();
 				textView.setText("CallSign: "+CallSign+"\nSupply: "+Supply+" mV\nBacklight: "+BackLight+"\nVolume: "+Volume);
 				if (Volume==-57) {
 					Mute.setChecked(true);
