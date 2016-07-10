@@ -20,7 +20,8 @@
                 android:layout_height="128px"
                 android:layout_gravity="top"
                 android:layout_weight="1.0"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:clickable="true" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="96dp"
@@ -30,6 +31,10 @@
                 android:layout_weight="1.16"
                 android:layout_column="2" />
         </TableRow>
+    </TableLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -45,22 +50,19 @@
                 android:textOff="@string/button_light"
                 android:textOn="@string/button_light" />
 
-            <ToggleButton
-                android:layout_width="wrap_content"
+            <SeekBar
+                android:layout_width="128dp"
                 android:layout_height="wrap_content"
-                android:text="New ToggleButton"
-                android:id="@+id/toggleButtonMute"
-                android:layout_gravity="center_vertical"
+                android:id="@+id/seekBar"
                 android:layout_column="2"
-                android:checked="false"
-                android:textOff="@string/button_mute"
-                android:textOn="@string/button_mute" />
+                android:max="100"
+                android:progress="0" />
 
             <Button
                 android:id="@+id/sendBtn"
                 android:text="@string/button_refresh"
                 android:layout_gravity="center_vertical"
-                android:layout_column="25" />
+                android:layout_column="3" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -68,7 +70,35 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:visibility="gone"
-                android:layout_column="26" />
+                android:layout_column="4" />
+        </TableRow>
+    </TableLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New ToggleButton"
+                android:id="@+id/toggleButtonMute"
+                android:layout_gravity="center_vertical"
+                android:layout_column="1"
+                android:checked="false"
+                android:textOff="@string/button_mute"
+                android:textOn="@string/button_mute" />
+
+            <SeekBar
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBar2"
+                android:layout_column="2"
+                android:progress="0"
+                android:max="63" />
         </TableRow>
 
     </TableLayout>
@@ -77,7 +107,7 @@
         android:id="@+id/console"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="2.26"
         android:background="@android:color/black"
         android:ems="10"
         android:gravity="top"

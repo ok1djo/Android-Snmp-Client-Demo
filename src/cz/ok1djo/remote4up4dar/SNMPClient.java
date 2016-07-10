@@ -68,6 +68,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	public Variable value;
 	static OID oid;
 	public  VariableBinding req;
+	public boolean semafor=false;
 
 	// UI
 	private Button sendBtn;
@@ -236,14 +237,17 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 	}
 	public void doMagic(String lOIDVALUE, int ltype, Variable lvalue) {
 
-			mSpinner.setVisibility(View.VISIBLE);
-			try{
+		while (semafor) {
+			try {
 				logResult.append("sleeping \n");
 				Thread.sleep(100);
-			}catch(InterruptedException e){
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-//		semafor=true;
+		}
+		semafor=true;
+		mSpinner.setVisibility(View.VISIBLE);
+
 		AsyncTask<Void, Void, Void> mAsyncTask = new AsyncTask<Void, Void, Void>() {
 
 			protected void onPreExecute() {
@@ -265,16 +269,18 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 				console.setText("");
 				console.append(logResult);
 				mSpinner.setVisibility(View.GONE);
+				semafor=false;
 			}
 		};
 		mAsyncTask.execute();
-		try{
-			logResult.append("sleeping \n");
-			Thread.sleep(100);
-		}catch(InterruptedException e){
-			e.printStackTrace();
+		while (semafor) {
+			try {
+				logResult.append("sleeping \n");
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-
 	}
 
 	private void sendSnmpRequest(String cmd, int typ, Variable var) throws Exception {
@@ -363,7 +369,7 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 			logResult.append("Error: Agent Timeout... \n");
 		}
 		snmp.close();
-//		semafor=false;
+		semafor=false;
 	}
 }
 
