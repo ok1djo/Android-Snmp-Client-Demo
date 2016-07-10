@@ -40,8 +40,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
 import java.io.IOException;
-import java.util.List;
+//import java.io.IOException;
+//import java.net.InetAddress;
+//import java.net.UnknownHostException;
+//import java.util.List;
 
 public class SNMPClient extends Activity implements View.OnClickListener {
 	DrawView drawView;
@@ -93,6 +97,41 @@ public class SNMPClient extends Activity implements View.OnClickListener {
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		// Initialize UI
 		iniUI();
+		SharedPreferences sharedPreff = PreferenceManager.getDefaultSharedPreferences(this);
+		try {
+			Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 " + sharedPreff.getString("ip", "DEFAULT"));
+			try {
+				int returnVal = p1.waitFor();
+				boolean reachable = (returnVal == 0);
+				if (reachable) {
+					doMagic(OIDBASE + OIDCALL, PDU.GET, null);
+					CallSign = req.getVariable().toString();
+					doMagic(OIDBASE + OIDVOLTAGE, PDU.GET, null);
+					Supply = req.getVariable().toInt();
+					doMagic(OIDBASE + OIDVOLUME, PDU.GET, null);
+					Volume = req.getVariable().toInt();
+					doMagic(OIDBASE + OIDBACKLIGHT, PDU.GET, null);
+					BackLight = req.getVariable().toInt();
+					doMagic(OIDBASE + OIDMAINDISP, PDU.GET, null);
+					SimpleDrawingView.paintBitmap(req.getVariable().toString());
+					textView.setText("CallSign: " + CallSign + "\nSupply: " + Supply + " mV\nBacklight: " + BackLight + "\nVolume: " + Volume);
+					if (Volume == -57) {
+						Mute.setChecked(true);
+					} else {
+						Mute.setChecked(false);
+					}
+					if (BackLight == 0) {
+						BackLt.setChecked(false);
+					} else {
+						BackLt.setChecked(true);
+					}
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void iniUI() {
